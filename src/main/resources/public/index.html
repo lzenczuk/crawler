@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task creator</title>
+</head>
+<body>
+<form method="post" action="/task">
+    <textarea name="script" rows="40" cols="80">
+var page = browser.newPage();
+page.goToURL('http://wikipedia.org');
+page.getTitle();
+ResultBuilder.success();
+    </textarea>
+    <br/>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>

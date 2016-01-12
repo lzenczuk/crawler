@@ -1,8 +1,10 @@
 package com.github.lzenczuk.crawler.task;
 
 import com.github.lzenczuk.crawler.browser.Browser;
+import com.github.lzenczuk.crawler.script.Result;
 import com.github.lzenczuk.crawler.script.ScriptRunner;
 
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -25,11 +27,17 @@ public class TaskQueue {
             while (true) {
                 try {
                     final Task task = taskQueue.take();
-                    runner.run(task.getScript(), task.getParams(), browser);
+                    final Optional<Result> resultOptional = runner.run(task.getScript(), task.getParams(), browser);
+
+                    System.out.println(resultOptional.map(result -> result.toString()).orElse("No result"));
+
                 } catch (InterruptedException e) {
+                    System.out.println("Exception: "+e.getMessage());
                     break;
                 }
             }
+
+            System.out.println("Task process ends");
         });
 
         thread.start();
@@ -37,6 +45,7 @@ public class TaskQueue {
 
     public void addTask(Task task){
         taskQueue.add(task);
+        System.out.println("Task added");
     }
 
     public int getWaitingTasks(){

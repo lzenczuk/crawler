@@ -27,6 +27,8 @@ public class NashornScriptRunner implements ScriptRunner {
     @Override
     public Optional<Result> run(String script, Map<String, Object> params, Browser browser) {
 
+        System.out.println("Running script");
+
         SimpleBindings scriptBindings;
 
         if(params!=null){
