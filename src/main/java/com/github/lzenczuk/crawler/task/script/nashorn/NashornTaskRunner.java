@@ -1,38 +1,40 @@
-package com.github.lzenczuk.crawler.script.nashorn;
+package com.github.lzenczuk.crawler.task.script.nashorn;
 
 import com.github.lzenczuk.crawler.browser.Browser;
-import com.github.lzenczuk.crawler.script.Result;
-import com.github.lzenczuk.crawler.script.ResultBuilder;
-import com.github.lzenczuk.crawler.script.ScriptRunner;
+import com.github.lzenczuk.crawler.task.Result;
+import com.github.lzenczuk.crawler.task.script.ResultBuilder;
+import com.github.lzenczuk.crawler.task.TaskRunner;
+import com.github.lzenczuk.crawler.task.script.ScriptTask;
 
 import javax.script.*;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * @author lzenczuk 11/01/2016
  */
-public class NashornScriptRunner implements ScriptRunner {
+public class NashornTaskRunner implements TaskRunner<ScriptTask> {
 
     private final ScriptEngine engine;
+    private final Browser browser;
 
-    public NashornScriptRunner() {
-        engine = new ScriptEngineManager().getEngineByName("nashorn");
+    public NashornTaskRunner(Browser browser) {
+        this.browser = browser;
+        this.engine = new ScriptEngineManager().getEngineByName("nashorn");
     }
 
-    public NashornScriptRunner(ScriptEngine engine) {
+    public NashornTaskRunner(Browser browser, ScriptEngine engine) {
+        this.browser = browser;
         this.engine = engine;
     }
 
     @Override
-    public Optional<Result> run(String script, Map<String, Object> params, Browser browser) {
-
+    public Optional<Result> run(ScriptTask task) {
         System.out.println("Running script");
 
         SimpleBindings scriptBindings;
 
-        if(params!=null){
-            scriptBindings = new SimpleBindings(params);
+        if(task.getParams()!=null){
+            scriptBindings = new SimpleBindings(task.getParams());
         }else{
             scriptBindings = new SimpleBindings();
         }
@@ -41,7 +43,7 @@ public class NashornScriptRunner implements ScriptRunner {
         scriptBindings.put("ResultBuilder", new ResultBuilder());
 
         try {
-            final Object result = engine.eval(script, scriptBindings);
+            final Object result = engine.eval(task.getScript(), scriptBindings);
 
             if(result == null) return Optional.empty();
 

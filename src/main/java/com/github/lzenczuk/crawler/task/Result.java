@@ -1,4 +1,4 @@
-package com.github.lzenczuk.crawler.script;
+package com.github.lzenczuk.crawler.task;
 
 /**
  * @author lzenczuk 12/01/2016

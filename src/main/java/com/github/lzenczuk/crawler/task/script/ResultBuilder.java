@@ -1,4 +1,6 @@
-package com.github.lzenczuk.crawler.script;
+package com.github.lzenczuk.crawler.task.script;
+
+import com.github.lzenczuk.crawler.task.Result;
 
 /**
  * @author lzenczuk 12/01/2016
