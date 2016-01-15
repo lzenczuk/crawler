@@ -1,8 +1,8 @@
-package com.github.lzenczuk.crawler.task.notification.task;
+package com.github.lzenczuk.crawler.task.notification;
 
-import com.github.lzenczuk.crawler.task.status.cache.TaskEntry;
-import com.github.lzenczuk.crawler.task.status.TaskStatus;
-import com.github.lzenczuk.crawler.task.status.TaskStatusChange;
+import com.github.lzenczuk.crawler.task.notification.TaskNotification;
+import com.github.lzenczuk.crawler.task.notification.impl.inmemory.TaskNotifications;
+import com.github.lzenczuk.crawler.task.TaskStatus;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 import org.junit.Test;
@@ -13,12 +13,12 @@ import java.util.concurrent.*;
 /**
  * @author lzenczuk 13/01/2016
  */
-public class TaskEntryPerformanceTest {
+public class TaskNotificationsPerformanceTest {
 
     @Test
     public void testPerformance() throws Exception {
 
-        TaskEntry te = new TaskEntry(22);
+        TaskNotifications te = new TaskNotifications(22);
 
         final int NUMBER_OF_WRITE_THREADS = 1;
         final String WRITE_THREAD_NAME = "TP_WriteThread_";
@@ -44,18 +44,12 @@ public class TaskEntryPerformanceTest {
                 final Random random = new Random(System.nanoTime());
 
                 for (int y = 0; y < WRITES_ITERATIONS; y++) {
-                    final int i = random.nextInt(3);
+                    final int i = random.nextInt(2);
 
                     final long startTime = System.nanoTime();
 
                     if (i == 0) {
-                        te.addStatusChange(new TaskStatusChange(22, TaskStatus.WAITING, new Date()));
-                    } else if (i == 1) {
-                        te.addStatusChange(new TaskStatusChange(22, TaskStatus.RUNNING, new Date()));
-                    } else if (i == 2) {
-                        te.addStatusChange(new TaskStatusChange(22, TaskStatus.FINISHED_SUCCESFULY, new Date()));
-                    } else {
-                        te.addStatusChange(new TaskStatusChange(22, TaskStatus.FINISHED_WITH_ERROR, new Date()));
+                        te.add(new TaskNotification(22, new Date(), TaskStatus.RUNNING, "Test", "Performance test: iteration "+y));
                     }
 
                     addStatusChangeTimes.addValue(System.nanoTime()-startTime);
@@ -85,10 +79,10 @@ public class TaskEntryPerformanceTest {
                     final long startTime = System.nanoTime();
 
                     if (i == 0) {
-                        te.getChangeHistory();
+                        te.getAll();
                         getChangeHistoryTimes.addValue(System.nanoTime()-startTime);
                     }else{
-                        te.getLatestChange();
+                        te.getLast();
                         getLatestChangeTimes.addValue(System.nanoTime()-startTime);
                     }
                 }

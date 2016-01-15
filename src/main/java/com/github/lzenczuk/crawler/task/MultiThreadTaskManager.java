@@ -1,8 +1,9 @@
 package com.github.lzenczuk.crawler.task;
 
-import com.github.lzenczuk.crawler.task.status.TaskStatus;
-import com.github.lzenczuk.crawler.task.status.TaskStatusChangeListener;
+import com.github.lzenczuk.crawler.task.notification.TaskNotification;
+import com.github.lzenczuk.crawler.task.notification.TaskNotificationListener;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.*;
 
@@ -18,15 +19,15 @@ public class MultiThreadTaskManager<T extends Task> implements TaskManager<T> {
 
     private final TaskRunner runner;
     private final int threads;
-    private final TaskStatusChangeListener taskStatusChangeListener;
+    private final TaskNotificationListener taskNotificationListener;
 
-    public MultiThreadTaskManager(TaskRunner runner, TaskStatusChangeListener taskStatusChangeListener) {
-        this(DEFAULT_NUMBER_OF_THREADS, runner, taskStatusChangeListener);
+    public MultiThreadTaskManager(TaskRunner runner, TaskNotificationListener taskNotificationListener) {
+        this(DEFAULT_NUMBER_OF_THREADS, runner, taskNotificationListener);
     }
 
-    public MultiThreadTaskManager(int threads, TaskRunner runner, TaskStatusChangeListener taskStatusChangeListener) {
+    public MultiThreadTaskManager(int threads, TaskRunner runner, TaskNotificationListener taskNotificationListener) {
         this.runner = runner;
-        this.taskStatusChangeListener = taskStatusChangeListener;
+        this.taskNotificationListener = taskNotificationListener;
         this.threads = threads;
 
         init();
@@ -42,14 +43,14 @@ public class MultiThreadTaskManager<T extends Task> implements TaskManager<T> {
                     final T task = taskQueue.take();
 
                     executorService.submit(() -> {
-                        taskStatusChangeListener.statusChange(task.getId(), TaskStatus.RUNNING);
+                        taskNotificationListener.update(new TaskNotification(task.getId(), new Date(), TaskStatus.RUNNING, "MultiThreadTaskManager", "Executing using scriptRunner"));
                         final Optional<Result> resultOptional = runner.run(task);
 
                         resultOptional.ifPresent(result -> {
                             if(result.isSuccess()){
-                                taskStatusChangeListener.statusChange(task.getId(), TaskStatus.FINISHED_SUCCESFULY);
+                                taskNotificationListener.update(new TaskNotification(task.getId(), new Date(), TaskStatus.SUCCESS, "MultiThreadTaskManager", "Executed successfully"));
                             }else{
-                                taskStatusChangeListener.statusChange(task.getId(), TaskStatus.FINISHED_WITH_ERROR);
+                                taskNotificationListener.update(new TaskNotification(task.getId(), new Date(), TaskStatus.ERROR, "MultiThreadTaskManager", "Execution error: "+result.getErrorMessage()));
                             }
                         });
                     });
@@ -69,6 +70,6 @@ public class MultiThreadTaskManager<T extends Task> implements TaskManager<T> {
     @Override
     public void runTask(T task){
         taskQueue.add(task);
-        taskStatusChangeListener.statusChange(task.getId(), TaskStatus.WAITING);
+        taskNotificationListener.update(new TaskNotification(task.getId(), new Date(), TaskStatus.RUNNING, "MultiThreadTaskManager", "Added to execution queue"));
     }
 }

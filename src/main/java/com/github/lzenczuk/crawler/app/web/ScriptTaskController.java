@@ -3,7 +3,7 @@ package com.github.lzenczuk.crawler.app.web;
 import com.github.lzenczuk.crawler.app.service.TaskService;
 import com.github.lzenczuk.crawler.app.service.TasksIdGenerator;
 import com.github.lzenczuk.crawler.task.script.ScriptTask;
-import com.github.lzenczuk.crawler.task.status.TaskStatus;
+import com.github.lzenczuk.crawler.task.TaskStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

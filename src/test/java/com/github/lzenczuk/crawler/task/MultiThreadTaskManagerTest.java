@@ -1,11 +1,10 @@
 package com.github.lzenczuk.crawler.task;
 
 import com.github.lzenczuk.crawler.browser.Browser;
+import com.github.lzenczuk.crawler.task.notification.TaskNotificationListener;
 import com.github.lzenczuk.crawler.task.script.ScriptTask;
-import com.github.lzenczuk.crawler.task.status.TaskStatusChangeListener;
 import org.junit.Test;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -32,9 +31,9 @@ public class MultiThreadTaskManagerTest {
             return Optional.of(Result.success());
         });
 
-        final TaskStatusChangeListener taskStatusChangeListener = mock(TaskStatusChangeListener.class);
+        final TaskNotificationListener taskNotificationListener = mock(TaskNotificationListener.class);
 
-        final MultiThreadTaskManager taskQueue = new MultiThreadTaskManager(taskRunner, taskStatusChangeListener);
+        final MultiThreadTaskManager taskQueue = new MultiThreadTaskManager(taskRunner, taskNotificationListener);
         taskQueue.runTask(new ScriptTask(0, "test", null));
         taskQueue.runTask(new ScriptTask(1, "test", null));
         taskQueue.runTask(new ScriptTask(2, "test", null));
