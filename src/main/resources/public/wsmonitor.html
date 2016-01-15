@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WSTaskMonitor</title>
+    <script type="application/javascript" src="js/sockjs-1.0.3.js"></script>
+    <script type="application/javascript" src="js/stomp.js"></script>
+</head>
+<body>
+<script type="application/javascript">
+    var socket = new SockJS("/ws");
+    var stompClient = Stomp.over(socket);
+
+
+    stompClient.connect({}, function(frame) {
+        console.log("Connected");
+
+
+        stompClient.subscribe("/topic/notification", function(task){
+            console.log("/topic/notification: "+JSON.stringify(task))
+        });
+
+
+        stompClient.send("/app/task", {}, "test task")
+    });
+</script>
+
+</body>
+</html>
